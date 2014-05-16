@@ -2,35 +2,35 @@
 """
 This script was written to download reviews of a set of items from Amazon.com
 
-Flow: 
+Process: 
     1) The product names and links are stored in a dictionary
-    2) The program keeps track where it was when downloading the reviews
+    2) The program leaps through the dictionary, and downloads review pages
+    3) html files are processed as xml structures
+    4) Fields are extracted with xpath expression    
+    5) Saved variables: date, rating, title, text in a csv file
+    6) The program keeps track the downloading progression
         So after a restart, the program can continue the data collection 
         from where it stopped
-    3) Review data stored in a csv file for each kindle 
     
-version: 0.0.1 Last modified: 2014.05.12
-    - defined dict and links
-    - loops through the dict
-    - Last page checker
-    - indexfile write/read, update
-    - removing non-ascii characters from review texts
+version: 1.5 Last modified: 2014.05.12
 
-@author: daniel
+@author: Daniel Suveges
 """
-from lxml import html
-import requests
-import datetime
+from lxml import html   # html files are processed as xml
+import requests         # manages remote file access
+import datetime         # to format data
+import commands         # to keep track where the downlad stops last time
 
-# Format rating 
+# This function extract the rating number from the given field
 def clearRatings(ratingList):
-    clearedrating = []
     
+    clearedrating = []    
     for rating in ratingList:
         clearedrating.append(rating[0:3])
 
     return(clearedrating)
-    
+
+# non-ASCII UTF-8 characters could easily cause problems, we have to remove them    
 def formatRevText(revlists):
     formatedRevtext = []
     
@@ -40,7 +40,8 @@ def formatRevText(revlists):
 
     return(formatedRevtext)    
     
-# format date of review:
+# the format of the date in the reviews is not nice. Format it!
+    # January 15, 2012 -> 2012-01-15
 def clearDate(revDate):
     clearedDate = []
     
@@ -49,7 +50,7 @@ def clearDate(revDate):
                 
     return(clearedDate)
     
-# Clearing textual values.
+# non-ASCII UTF-8 characters could easily cause problems, we have to remove them
 def clearText(texts):
     clearedText = []
     
@@ -58,15 +59,32 @@ def clearText(texts):
         clearedText.append(text.replace(",","" ))
         
     return(clearedText)
+
+# As each entry in the output file equals to one review,
+# And there are 10 reviews on one page, based on the length of the 
+# output file, we can get the page, where the data collection ended
+def PageToDownLoad(product):
+    GetLengthCommand = "wc -l " + product + "_review.csv"
+    wcAnswer = commands.getoutput(GetLengthCommand)
+    wcAnswer = wcAnswer.lstrip()
     
+    # Test if the file existed or not:
+    firstWord = wcAnswer.split(" ")[0]
+    try:
+        return (int(firstWord)/10)
+
+    except:
+        return 1
+
+# non-ASCII UTF-8 characters could easily cause problems, we have to remove them
 def removeNonAscii(s): 
     return "".join(i for i in s if ord(i)<128)
 
-# pringing out downloaded values
+# organizing downloaded values into a printable lines of csv file.
 def writeTable(date, rating, title, text):
     tableRows = []
     
-    # The length should be 10, bu tapparently some values sometimes are missing...
+    # The length should be 10, but somehow some values sometimes are missing...
     # We need to check if all the values are there, and write only those, that are there...
     for i in range(10):
         try:
@@ -97,44 +115,33 @@ def writeTable(date, rating, title, text):
 # A function to get the number of reviewpages
 def LastPage(link):
 
-    tree    = DownloadPage((link+str(1)))
-    rating  = tree.xpath('//div[@class="CMpaginate"]/span/a/text()')
-    return (rating[1])
+    tree      = DownloadPage((link+str(1)))
+    LastPage  = tree.xpath('//div[@class="CMpaginate"]/span/a/text()')
+    return (LastPage[1])
 
-# Downloads webpage and generates a xml tree from it, and returns. 
+# Downloads webpage and generates a xml tree from it 
 def DownloadPage(link):
-
+    
     page           = requests.get(link)
-    brFreePage     = page.text.replace("<br />", "") # all <br /> tags have to be removed!!  
-    brFreePageUnic = brFreePage.decode('unicode_escape').encode('ascii','ignore')
-    brFreePageUnic = brFreePageUnic.replace("uff0c", "")   
-    tree           = html.fromstring(brFreePageUnic)
+    brFreePage     = page.text.replace("<br />", "") # all <br /> tags have to be removed!!     
+    tree           = html.fromstring(brFreePage)
     return(tree)
 
-# Before we start downloading the data, we want to see which page we should start with:    
-def PageToDownLoad(product):
-    filename = product + "_index"
-    print ("Opening " + filename)
-    
-    try:
-        f = open(filename, 'r')
-        page = str(f.readlines()[-1])
-        return (int(page))
-        f.close()
-    
-    except:
-        return ("0")
-
+# Core process does most of the stuff
 def Core(product, link):
-    lastpage   = LastPage(link)
-    startpage  = PageToDownLoad(product)
     
-    indexfile  = open(product + "_index", "a+")
-    reviewfile = open(product + "_review.csv", "a+")
+    lastpage   = LastPage(link)          # The last page of reviews
+    startpage  = PageToDownLoad(product) # Where to start downloading.
+
+    reviewfile = open(product + "_review.csv", "a+") # The output csv file for storing the data
 
     # main loop
     for pageNo in range(int(startpage), int(lastpage)):
+        
+        # Status update:        
         print("We are on page {0} (out of {2}) of the reviews of {1}".format(str(pageNo), product, lastpage))        
+        
+        # Downloading review page:        
         tree  = DownloadPage(link+str(pageNo))
         
         # Step 3 -> Extracting information from the html file:
@@ -149,16 +156,13 @@ def Core(product, link):
         cleanTitle  = clearText(title)
         cleanText   = clearText(revtext)
         
-        # Step 5. Returning downloaded and parsed data:
+        # Step 5. saving parsed data:
         table       = writeTable(cleanDate, cleanRating, cleanTitle, cleanText)
         reviewfile.writelines(table)
                 
-        indexfile.writelines(str(pageNo))
-        
-        
-    indexfile.close()
     reviewfile.close()
 
+# Might not all the generations are listed here, but definately most of them.... 
 kindles =   {
     # 1st generation Kindle reviews:     
     "First_generation": "http://www.amazon.com/Kindle-Amazons-Original-Wireless-generation/product-reviews/B000FI73MA/ref=cm_cr_dp_see_all_summary?pageNumber=",
@@ -178,8 +182,7 @@ kindles =   {
     "Fifth_generation_2": "http://www.amazon.com/Kindle-Paperwhite-3G/product-reviews/B007OZNUCE/ref=pr_all_summary_cm_cr_acr_txt?pageNumber="
 }
 
-
+# Looping through the dictionary and download the reviews of all Kindles
 for kindle in kindles.keys():
-    #lastpage = LastPage(kindles[kindle])
     Core(kindle,kindles[kindle])    
 
