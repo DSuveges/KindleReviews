@@ -24,6 +24,19 @@ I used the [wikipedia article](http://en.wikipedia.org/wiki/Amazon_Kindle) to ge
 | [Kindle Paperwhite](http://www.amazon.com/Kindle-Paperwhite-Touch-light/dp/B007OZNZG0/ref=sr_1_6?s=digital-text&ie=UTF8&qid=1400470162&sr=1-6&keywords=new+kindle) | 2012 | 19664 |
 | [Kindle Paperwhite 2](http://www.amazon.com/Kindle-Paperwhite-Ereader/dp/B00AWH595M/ref=sr_1_1?s=digital-text&ie=UTF8&qid=1400470621&sr=1-1&keywords=kindle+paper) | 2013 | 11544 |
 
+These were those model that my analysis based on.
+
 
 ## Data collection
-Then I used the ReviewDownloader.py script to download all the reviews.
+
+Then I used the ReviewDownloader.py script to download all the reviews. The process involved the following steps:
+
+1) The product names and links are stored in a dictionary
+2) The program leaps through the dictionary, and downloads review pages (via **request** package)
+3) html files are processed as xml structures (via **lxlm** package)
+4) Fields are extracted with xpath expression
+5) I was interested in the following fields: date, rating, title, text
+6) These fields had to be cleaned to prepare to analysis: date -> ISO 8601 format ( **datetime** package), special UTF8 characters were removed from the text of the review
+7) cleaned values were saved in a csv file
+6) The downloading process itself was really long (), I had to make it sure, once the program stops because of whatever reason, it can continue upon restart. When a program starts, checks then number of lines of the saved cvs (**commands** package), that can be translated to the progression.
+
