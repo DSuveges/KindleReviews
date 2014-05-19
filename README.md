@@ -1,14 +1,14 @@
 KindleReviews
 =============
 
-# Motivation
+## Motivation
 
-I love to read and I love my Kindle e-book reader. I really think that electronic books have revolutionize reading. As over the years, I bought around ten devices for family and friends, I saw how dramatic developments occured. It is almost quite impossible to find any space for further developments. I was courious how the opinion of customers have changed over time and over the these striking developments.
+I love to read and I love my Kindle e-book reader. I really think that electronic books have revolutionize reading. As over the years, I bought around ten devices for family and friends as gifts, and I saw how dramatic developments occured. It is almost quite impossible to find any space for further developments. I was courious how the opinion of customers have changed over time and over the these striking developments.
 
-On the other hand answering this question provided me a great opportunity to get an exposure in python and its powerful libraries: pandas, numpy and matplotlib.
+On the other hand answering this question provided me a great opportunity to get an exposure to python and its powerful libraries: pandas, numpy and matplotlib.
 
 
-## Geting started
+### Source data
 
 I used the [wikipedia article](http://en.wikipedia.org/wiki/Amazon_Kindle) to get a complete list of Kindle e-book readers. Then all the models were identifed in the [Amazon](http://www.amazon.com/s/ref=nb_sb_ss_c_0_6?url=search-alias%3Ddigital-text&field-keywords=kindle&sprefix=kindle%2Caps%2C321) marketplace. Here is the list and the links to the products:
 
@@ -27,7 +27,7 @@ I used the [wikipedia article](http://en.wikipedia.org/wiki/Amazon_Kindle) to ge
 These were those model that my analysis based on.
 
 
-## Data collection
+### Data collection
 
 Then I used the ReviewDownloader.py script to download all the reviews. The process involved the following steps:
 
@@ -40,3 +40,4 @@ Then I used the ReviewDownloader.py script to download all the reviews. The proc
 7. cleaned values were saved in a .csv file
 6. The downloading process itself was really long (over hundred thousand reviwes on ten thousand pages), I had to make sure, once the program stops because of whatever reason, it can continue data collection upon restart. When a program starts, checks the number of lines of the saved cvs (**commands** package), that can be translated to the progression.
 
+### Analysis - getting started

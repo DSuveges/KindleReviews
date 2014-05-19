@@ -164,25 +164,35 @@ def Core(product, link):
 
 # Might not all the generations are listed here, but definately most of them.... 
 kindles =   {
-    # 1st generation Kindle reviews:     
-    "First_generation": "http://www.amazon.com/Kindle-Amazons-Original-Wireless-generation/product-reviews/B000FI73MA/ref=cm_cr_dp_see_all_summary?pageNumber=",
+    # 1st generation Kindle: 2007
+    "Kindle_1": "http://www.amazon.com/Kindle-Amazons-Original-Wireless-generation/product-reviews/B000FI73MA/ref=cm_cr_dp_see_all_summary?pageNumber=",
 
-    # 2nd generation:
-    "Second_generation": "http://www.amazon.com/Kindle-Wireless-Reading-Device-Display/product-reviews/B0015T963C/ref=sr_1_1_cm_cr_acr_txt?pageNumber=",
+    # 2nd generation: 2009
+    "Kindle_2": "http://www.amazon.com/Kindle-Wireless-Reading-Device-Display/product-reviews/B0015T963C/ref=sr_1_1_cm_cr_acr_txt?pageNumber=",
 
-    # 3rd generation (Kindle keyboard):
-    "Third_generation": "http://www.amazon.com/Kindle-Wireless-Reader-Wifi-Graphite/product-reviews/B002Y27P3M/ref=sr_1_2_cm_cr_acr_txt?pageNumber=",  
+    # Kindle DX: 2009
+    "Kindle_DX": "http://www.amazon.com/Kindle-DX-Wireless-Reader-3G-Global/product-reviews/B002GYWHSQ/ref=dp_top_cm_cr_acr_txt?ie=UTF8&showViewpoints=1",
 
-    # 4th generation - Kindle
-    "Fourth_generation": "http://www.amazon.com/Kindle-eReader-eBook-Reader-e-Reader/product-reviews/B00492CIC8/ref=cm_cr_pr_btm_link_2?pageNumber=",
-    "Fourth_generation_2": "http://www.amazon.com/Kindle-Ereader-ebook-reader/product-reviews/B007HCCNJU/ref=cm_cr_dp_see_all_btm?pageNumber=",
+    # 3rd generation (Kindle keyboard): 2010
+    "Kindle_keyboard": "http://www.amazon.com/Kindle-Wireless-Reader-Wifi-Graphite/product-reviews/B002Y27P3M/ref=sr_1_2_cm_cr_acr_txt?pageNumber=",
 
-    # 5th generation (Kindle paperwhite):
-    "Fifth_generation": "http://www.amazon.com/Kindle-Paperwhite-Ereader/product-reviews/B00AWVXK5O/ref=sr_1_1_cm_cr_acr_txt?pageNumber=",    
-    "Fifth_generation_2": "http://www.amazon.com/Kindle-Paperwhite-3G/product-reviews/B007OZNUCE/ref=pr_all_summary_cm_cr_acr_txt?pageNumber="
+    # 4th generation - Kindle 2011
+    "Kindle_basic": "http://www.amazon.com/Kindle-eReader-eBook-Reader-e-Reader/product-reviews/B00492CIC8/ref=cm_cr_pr_btm_link_2?pageNumber=",
+
+    # 5th generation - Kindle 2012
+    "Kindle": "http://www.amazon.com/Kindle-Ereader-ebook-reader/product-reviews/B007HCCNJU/ref=cm_cr_dp_see_all_btm?pageNumber=",
+
+    # Kindle touch 2011
+    "Kindle_touch" : "http://www.amazon.com/Kingle-Touch-e-Reader-Touchscreen-Touch-Screen-Wi-Fi/product-reviews/B005890FN0/ref=sr_1_1_cm_cr_acr_txt?",
+
+    # Kindle paperwhite first genertation: 2012
+    "Kindle_paperwhite_2": "http://www.amazon.com/Kindle-Paperwhite-Ereader/product-reviews/B00AWVXK5O/ref=sr_1_1_cm_cr_acr_txt?pageNumber=",
+
+    # Kindle paperwhite second generation: 2013
+    "Kindle_paperwhite": "http://www.amazon.com/Kindle-Paperwhite-3G/product-reviews/B007OZNUCE/ref=pr_all_summary_cm_cr_acr_txt?pageNumber="
+
 }
 
 # Looping through the dictionary and download the reviews of all Kindles
 for kindle in kindles.keys():
     Core(kindle,kindles[kindle])    
-
