@@ -42,4 +42,9 @@ Then I used the `ReviewDownloader.py` script to download all the reviews. The pr
 
 ### Analysis - getting started
 
-The csv files are read by the `csv_process.py` script. Though the text of the reviews are also available to analyse, at this point I am focusing on the date of the reviews and the pure ratings.
+The csv files are read by the `csv_process.py` script. Though the text of the reviews are also available to analyse, at this point I am focusing on the date of the reviews and the pure ratings. <br />
+
+The script reads all the saved csv file then takes the date (as datetime object) and the rating value (as float) and builds a pandas dataframe object. Then the dataframes of each model is stored in a dictionary as a value. <br />
+
+The workflow of the subsequent scripts are rely on the usage of a suitable IDE like [spyder](https://code.google.com/p/spyderlib/), as I the analyses are relying on the variables created by this script.
+
