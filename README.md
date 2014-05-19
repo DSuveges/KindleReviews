@@ -31,12 +31,12 @@ These were those model that my analysis based on.
 
 Then I used the ReviewDownloader.py script to download all the reviews. The process involved the following steps:
 
-1) The product names and links are stored in a dictionary
-2) The program leaps through the dictionary, and downloads review pages (via **request** package)
-3) html files are processed as xml structures (via **lxlm** package)
-4) Fields are extracted with xpath expression
-5) I was interested in the following fields: date, rating, title, text
-6) These fields had to be cleaned to prepare to analysis: date -> ISO 8601 format ( **datetime** package), special UTF8 characters were removed from the text of the review
-7) cleaned values were saved in a csv file
-6) The downloading process itself was really long (), I had to make it sure, once the program stops because of whatever reason, it can continue upon restart. When a program starts, checks then number of lines of the saved cvs (**commands** package), that can be translated to the progression.
+1. The product names and links are stored in a dictionary
+2. The program leaps through the dictionary, and downloads review pages (via **request** package)
+3. html files are processed as xml structures (via **lxlm** package)
+4. Fields are extracted with xpath expression
+5. I was interested in the following fields: date, rating, title, text
+6. These fields had to be cleaned to prepare to analysis: date -> ISO 8601 format ( **datetime** package), special UTF8 characters were removed from the text of the review
+7. cleaned values were saved in a csv file
+6. The downloading process itself was really long (), I had to make it sure, once the program stops because of whatever reason, it can continue upon restart. When a program starts, checks then number of lines of the saved cvs (**commands** package), that can be translated to the progression.
 
