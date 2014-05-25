@@ -52,8 +52,8 @@ The workflow of the subsequent scripts rely on the usage of a suitable IDE like 
 
 At first I wanted to create a table to summarize the number of reviews and ratings of different e-book reader:
 ```Python
-print "| Model | Number of Ratings | Average ratings | First Rating |"
-print "|-------:|:----------------:|:---------------:|:-------------|"
+print "| Model  | Number of Ratings | Average ratings | First Rating |"
+print "|-------:|:-----------------:|:---------------:|:-------------|"
 for i in range(len(kindles)):
     product     = kindles[i]
     Rev_number  = Grouped_DF[product].count()[0]
@@ -63,7 +63,7 @@ for i in range(len(kindles)):
 
     print ("| {} | {} | {} | {} |".format(product, Rev_number, Average_rev, first_rate))
 ```
-| Model | Number of Ratings | Average ratings | First Rating |
+| Model  | Number of Ratings | Average ratings | First Rating |
 |-------:|:----------------:|:---------------:|:-------------|
 | Kindle_1 | 7980 | 4.22 | November 18, 2007 |
 | Kindle_2 | 17998 | 4.31 | February 23, 2009 |
@@ -116,8 +116,7 @@ Out[396]:
 | 2009-08-31 | 3.991653 | 599   | 1.488506 | 0.060819 |
 | 2009-09-30 | 4.479936 | 623   | 1.010793 | 0.040497 |
 
-As the number of the reviews are really high, this deviation is quite surprising. We might can think there was a bad batch of readers and all the buyers were immediately complainig (This suggested by the extraordinary high review number as well).If we compare the histogram of this period with the histogram of the total rating of Kindle 2 we can see how the weakest rating is highly populated. To find out more about this outlier I will later analyse the text of the reviews of this period.
-
+As the number of the reviews are really high, this deviation is quite surprising. We might can think there was a bad batch of readers and all the buyers were immediately complainig (This suggested by the extraordinary high review number as well).If we compare the histogram of this period with the histogram of the total rating of Kindle 2 we can see how the weakest rating is highly populated.
 ```Python
 f.subplots_adjust(hspace=0)
 setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
@@ -137,3 +136,15 @@ ax[1].set_ylabel("#Rating")
 ax[1].legend(loc='upper center')
 ```
 ![Distribution of ratings of Kindle 2 at different times](http://kepfeltoltes.hu/140525/Kindle2_raings_www.kepfeltoltes.hu_.png)
+
+To find out more about this outlier, I will later analyse the text of the reviews of this period, as I could not find any news in the archives of the mayor newsportals.
+
+#### Combining reviews over time
+
+As I have mentioned earlier, the number of reviews suggest that the e-book readers are no longer as interesting. To test this I have combined all the number of reviews of all models to see if that was indeed the case.
+
+Though I have to optimize the plotting script (stackedplot class compatibility with other plot methods is quite poor...) The overall shope shuggest that the number of reviews over time probably reached its peak and ....
+
+![Cumulative reviews](http://kepfeltoltes.hu/140525/cumul_rev_www.kepfeltoltes.hu_.png)
+
+# To be continued...
