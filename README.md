@@ -71,7 +71,30 @@ Steps:
 #### Discussion:
 
 There are many interesting features on the graph:
-* In general the ratings just slightly decrease over time, except the Kindle Touch model, where the announce of the Paperwhite models, the average ratings decreased dramotically. I think the buyers could possibly made a wrong choice and accidentally purchased the thouch instead of the paperwhite. (there are not too many reviews, 4-20 a month)
-* An other interesting feature we can see in many models: after announcing a new product, during the first few months the ratings are slightly increasing. I think the reasone of this behavior is the nature of population who buys products when they are announced, maybe motivated by the novelty of the product or by the massive advertisments. These people might have extraordinarily high expectations leading to the lower ratings. Later the reviews are belonging to customers who just want to buy an e-book, and they just satisfied as it is.
-* An interesting piece of the kindle family is the DX model. It has never been as popular as other members, but because of its unique large display, DX never had to share its segment with other readers.
-* 
+* In general, ratings just slightly decrease over time, except the Kindle Touch model, where since the announce of the Paperwhite models, the average ratings have decreased dramotically. I think the buyers could possibly made a wrong choice and accidentally purchased the thouch instead of the paperwhite. (there are not too many reviews, 4-20 a month)
+* The lack of the general decrease can be explained by the fact that one user, who bought an obsolote model, probably do not have access to newer ones to compare.
+* An other interesting feature we can be seen in many models: after announcing a new product, during the first few months the ratings are slightly increasing. I think the reason of this behavior is the nature of the population who buys freshly announced products: they probaby are highly motivated by the novelty or by the massive advertisments. These people might have extraordinarily high expectations leading to the lower ratings. Latter the reviews belong to customers who just want to buy an e-book reader, and they just satisfied as it is.
+* An interesting piece of the kindle family is the DX model. It has never been as popular as other members, but because of its unique large display, DX equally satisfies customers over the 4 and a half years since its announcement.
+* Interestingly the most frequently rated e-reader is the third generation Kindle announced in 2010. Since then, however the extra features built in the newer models, readers have got less reviews. (Though, since 2011 multiple models have been competing with each other) This trend might indicates the peak of the e-book reader market if we assume that the number of reviews are proportional to the number of sold items.
+* Though the distribution of the ratings are quite even (except months when the number of reviews were really low, so the error is high) we can see a really striking outlier on the second generation kindle:
+
+```Python
+resampled_df["Kindle_2"][:5]
+Out[396]:
+````
+
+|            | Ratings                     |  SEM     |
+| ---------- |:---------------------------:|---------:|
+|            | mean     | count |   sdt    |          |
+| ---------- |:------:|:-------:|:--------:|:--------:|
+| 2009-05-31 | 4.306351 | 803   | 1.176790 | 0.041528 |
+| 2009-06-30 | 4.415094 | 689   | 1.081882 | 0.041216 |
+| 2009-07-31 | 2.777500 | 800   | 1.845196 | 0.065238 |
+| 2009-08-31 | 3.991653 | 599   | 1.488506 | 0.060819 |
+| 2009-09-30 | 4.479936 | 623   | 1.010793 | 0.040497 |
+
+
+
+
+
+
