@@ -52,28 +52,29 @@ The workflow of the subsequent scripts rely on the usage of a suitable IDE like 
 
 At first I wanted to create a table to summarize the number of reviews and ratings of different e-book reader:
 ```Python
-print "| Model | Number of Ratings | Average ratings |"
-print "|-------:|:----------------:|:----------------|"
+print "| Model | Number of Ratings | Average ratings | First Rating |"
+print "|-------:|:----------------:|:---------------:|:-------------|"
 for i in range(len(kindles)):
     product     = kindles[i]
     Rev_number  = Grouped_DF[product].count()[0]
     Average_rev = round(Grouped_DF[product].mean()[0],2)
+    rate_dates  = Grouped_DF[product].index.tolist()
+    first_rate  = datetime.strftime(min(rate_dates), "%B %d, %Y")
 
-    print ("| {} | {} | {} |".format(product, Rev_number, Average_rev))
-
+    print ("| {} | {} | {} | {} |".format(product, Rev_number, Average_rev, first_rate))
 ```
+| Model | Number of Ratings | Average ratings | First Rating |
+|-------:|:----------------:|:---------------:|:-------------|
+| Kindle_1 | 7980 | 4.22 | November 18, 2007 |
+| Kindle_2 | 17998 | 4.31 | February 23, 2009 |
+| Kindle_DX | 4930 | 3.99 | June 10, 2009 |
+| Kindle_keyboard | 41479 | 4.44 | August 26, 2010 |
+| Kindle_basic | 8550 | 4.28 | September 28, 2011 |
+| Kindle_touch | 8569 | 4.16 | November 14, 2011 |
+| Kindle | 10063 | 4.36 | September 06, 2012 |
+| Kindle_paperwhite | 19658 | 4.33 | October 01, 2012 |
+| Kindle_paperwhite_2 | 11470 | 4.48 | September 30, 2013 |
 
-| Model | Number of Ratings | Average ratings |
-|-------:|:----------------:|:----------------|
-| Kindle_1 | 7980 | 4.22 |
-| Kindle_2 | 17998 | 4.31 |
-| Kindle_DX | 4930 | 3.99 |
-| Kindle_keyboard | 41479 | 4.44 |
-| Kindle_basic | 8550 | 4.28 |
-| Kindle_touch | 8569 | 4.16 |
-| Kindle | 10063 | 4.36 |
-| Kindle_paperwhite | 19658 | 4.33 |
-| Kindle_paperwhite_2 | 11470 | 4.48 |
 
 
 ### Time dependent analysis of the reviews
