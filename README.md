@@ -111,4 +111,4 @@ ax[1].set_xlabel("Rating")
 ax[1].set_ylabel("#Rating")
 ax[1].legend(loc='upper center')
 ```
-[!Distribution of ratings of Kindle 2 at different times](http://kepfeltoltes.hu/140525/Kindle2_raings_www.kepfeltoltes.hu_.png)
+![Distribution of ratings of Kindle 2 at different times](http://kepfeltoltes.hu/140525/Kindle2_raings_www.kepfeltoltes.hu_.png)
