@@ -42,9 +42,36 @@ Then I used the `ReviewDownloader.py` script to download all the reviews. The pr
 
 ### Analysis - getting started
 
-The csv files are read by the `csv_process.py` script. Though the text of the reviews are also available to analyse, at this point I am focusing on the date of the reviews and the pure ratings. <br />
+The csv files are read by the `csv_process.py` script. Though the text of the reviews are also available to analyse, at this point I am only focusing on the date of the reviews and the pure ratings. <br />
 
 The script reads all the saved csv file then takes the date (as datetime object) and the rating value (as float) and builds a pandas dataframe object. Then the dataframes of each model is stored in a dictionary as a value. <br />
 
-The workflow of the subsequent scripts are rely on the usage of a suitable IDE like [spyder](https://code.google.com/p/spyderlib/), as I the analyses are relying on the variables created by this script.
+The workflow of the subsequent scripts rely on the usage of a suitable IDE like [spyder](https://code.google.com/p/spyderlib/), as I the analyses are using the variables created by this script.
 
+### Analysis - First steps
+
+At first I wanted to create a table to summarize the number of reviews and ratings of different e-book reader:
+
+### Time dependent analysis of the reviews
+
+In this chapter I was looking at how the ratings of different kindle models changed over time. I could look at the number of reviews and the average rating the reader got on a scale of 1 to 5. Initially I was thinking there might be a decrease in the ratings over time, as the announcements of newer models, with more features makes the old ones less satisfactory, but at the same time I was also expecting a large decrease of the number of reviews when a model becomes out of date.
+
+Steps:
+
+1. The output of the previously introduced `csv_process.py` script was used
+2. The time series were resampled to combine ratings of each month
+3. A stacked plot was generated, and the number of reviews were plotted as area map
+4. Then the average ratings and the standad errors were plotted over the areas
+5. The graph was saved
+
+#### The resulting graph:
+
+![Amazon reviews of kindle readers](http://kepfeltoltes.hu/140525/reviews_vs_time_www.kepfeltoltes.hu_.png)
+
+#### Discussion:
+
+There are many interesting features on the graph:
+* In general the ratings just slightly decrease over time, except the Kindle Touch model, where the announce of the Paperwhite models, the average ratings decreased dramotically. I think the buyers could possibly made a wrong choice and accidentally purchased the thouch instead of the paperwhite. (there are not too many reviews, 4-20 a month)
+* An other interesting feature we can see in many models: after announcing a new product, during the first few months the ratings are slightly increasing. I think the reasone of this behavior is the nature of population who buys products when they are announced, maybe motivated by the novelty of the product or by the massive advertisments. These people might have extraordinarily high expectations leading to the lower ratings. Later the reviews are belonging to customers who just want to buy an e-book, and they just satisfied as it is.
+* An interesting piece of the kindle family is the DX model. It has never been as popular as other members, but because of its unique large display, DX never had to share its segment with other readers.
+* 
