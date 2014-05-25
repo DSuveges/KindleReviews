@@ -51,6 +51,30 @@ The workflow of the subsequent scripts rely on the usage of a suitable IDE like 
 ### Analysis - First steps
 
 At first I wanted to create a table to summarize the number of reviews and ratings of different e-book reader:
+```Python
+print "| Model | Number of Ratings | Average ratings |"
+print "|-------:|:----------------:|:----------------|"
+for i in range(len(kindles)):
+    product     = kindles[i]
+    Rev_number  = Grouped_DF[product].count()[0]
+    Average_rev = round(Grouped_DF[product].mean()[0],2)
+
+    print ("| {} | {} | {} |".format(product, Rev_number, Average_rev))
+
+```
+
+| Model | Number of Ratings | Average ratings |
+|-------:|:----------------:|:----------------|
+| Kindle_1 | 7980 | 4.22 |
+| Kindle_2 | 17998 | 4.31 |
+| Kindle_DX | 4930 | 3.99 |
+| Kindle_keyboard | 41479 | 4.44 |
+| Kindle_basic | 8550 | 4.28 |
+| Kindle_touch | 8569 | 4.16 |
+| Kindle | 10063 | 4.36 |
+| Kindle_paperwhite | 19658 | 4.33 |
+| Kindle_paperwhite_2 | 11470 | 4.48 |
+
 
 ### Time dependent analysis of the reviews
 
@@ -91,7 +115,7 @@ Out[396]:
 | 2009-08-31 | 3.991653 | 599   | 1.488506 | 0.060819 |
 | 2009-09-30 | 4.479936 | 623   | 1.010793 | 0.040497 |
 
-As the number of the reviews are really high this deviation is quite surprising. We might can think there was a bad batch or readers and all the buyers were immediately complainig (This suggested by the extraordinary high review number as well). To find out more about this outlier I will later analyse the text of the reviews of this period. If we compare the histogram of this period with the histogram of the total rating of Kindle 2 we can see how the weakest rating is highly populated.
+As the number of the reviews are really high, this deviation is quite surprising. We might can think there was a bad batch of readers and all the buyers were immediately complainig (This suggested by the extraordinary high review number as well).If we compare the histogram of this period with the histogram of the total rating of Kindle 2 we can see how the weakest rating is highly populated. To find out more about this outlier I will later analyse the text of the reviews of this period.
 
 ```Python
 f.subplots_adjust(hspace=0)
