@@ -76,10 +76,10 @@ There are many interesting features on the graph:
 * An other interesting feature we can be seen in many models: after announcing a new product, during the first few months the ratings are slightly increasing. I think the reason of this behavior is the nature of the population who buys freshly announced products: they probaby are highly motivated by the novelty or by the massive advertisments. These people might have extraordinarily high expectations leading to the lower ratings. Latter the reviews belong to customers who just want to buy an e-book reader, and they just satisfied as it is.
 * An interesting piece of the kindle family is the DX model. It has never been as popular as other members, but because of its unique large display, DX equally satisfies customers over the 4 and a half years since its announcement.
 * Interestingly the most frequently rated e-reader is the third generation Kindle announced in 2010. Since then, however the extra features built in the newer models, readers have got less reviews. (Though, since 2011 multiple models have been competing with each other) This trend might indicates the peak of the e-book reader market if we assume that the number of reviews are proportional to the number of sold items.
-* Though the distribution of the ratings are quite even (except months when the number of reviews were really low, so the error is high) we can see a really striking outlier on the second generation kindle:
+* Though the distribution of the ratings are quite even (except months when the number of reviews were really low, so the error is high) we can see a really striking outlier on the second generation kindle, at 5th month.
 
 ```Python
-resampled_df["Kindle_2"][:5]
+resampled_df["Kindle_2"][3:7]
 Out[396]:
 ````
 
@@ -87,6 +87,28 @@ Out[396]:
 | ---------- |:--------:|:-----:|:--------:|:--------:|
 | 2009-05-31 | 4.306351 | 803   | 1.176790 | 0.041528 |
 | 2009-06-30 | 4.415094 | 689   | 1.081882 | 0.041216 |
-| 2009-07-31 | 2.777500 | 800   | 1.845196 | 0.065238 |
+| **2009-07-31** | **2.777500** | **800**   | **1.845196** | **0.065238** |
 | 2009-08-31 | 3.991653 | 599   | 1.488506 | 0.060819 |
 | 2009-09-30 | 4.479936 | 623   | 1.010793 | 0.040497 |
+
+As the number of the reviews are really high this deviation is quite surprising. We might can think there was a bad batch or readers and all the buyers were immediately complainig (This suggested by the extraordinary high review number as well). To find out more about this outlier I will later analyse the text of the reviews of this period. If we compare the histogram of this period with the histogram of the total rating of Kindle 2 we can see how the weakest rating is highly populated.
+
+```Python
+f.subplots_adjust(hspace=0)
+setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
+
+
+K2_july09 = Grouped_DF["Kindle_2"]['20090701':'20090731']
+K2_total  = Grouped_DF["Kindle_2"]
+f, ax = subplots(2,sharex=True)
+
+ax[0].hist(K2_total.values, label="All time")
+ax[0].set_ylabel("#Rating")
+ax[0].legend(loc='upper center')
+
+ax[1].hist(K2_july09.values, label="July 2011")
+ax[1].set_xlabel("Rating")
+ax[1].set_ylabel("#Rating")
+ax[1].legend(loc='upper center')
+```
+[!Distribution of ratings of Kindle 2 at different times](http://kepfeltoltes.hu/140525/Kindle2_raings_www.kepfeltoltes.hu_.png)
