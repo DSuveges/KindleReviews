@@ -3,9 +3,9 @@ KindleReviews
 
 ## Motivation
 
-I love to read and I love my Kindle e-book reader. I really think that electronic books have revolutionize reading. As over the years, I bought around ten devices for family and friends as gifts, and I saw how dramatic developments occured. It is almost quite impossible to find any space for further developments. I was courious how the opinion of customers have changed over time and over the these striking developments.
+I love to read and I love my Kindle e-book reader. I really think that electronic books have revolutionized reading. Over the years I bought around ten devices for family and friends as gifts, and I saw how dramatic developments occured. I was courious how the opinion of customers have changed over time and over these major developments.
 
-On the other hand answering this question provided me a great opportunity to get an exposure to python and its powerful libraries: pandas, numpy and matplotlib.
+Furthermore, answering this question provided me a great opportunity to get an exposure to python and its powerful libraries: pandas, numpy and matplotlib.
 
 
 ### Source data
@@ -24,7 +24,7 @@ I used the [wikipedia article](http://en.wikipedia.org/wiki/Amazon_Kindle) to ge
 | [Kindle Paperwhite](http://www.amazon.com/Kindle-Paperwhite-Touch-light/dp/B007OZNZG0/ref=sr_1_6?s=digital-text&ie=UTF8&qid=1400470162&sr=1-6&keywords=new+kindle) | 2012 | 19664 |
 | [Kindle Paperwhite 2](http://www.amazon.com/Kindle-Paperwhite-Ereader/dp/B00AWH595M/ref=sr_1_1?s=digital-text&ie=UTF8&qid=1400470621&sr=1-1&keywords=kindle+paper) | 2013 | 11544 |
 
-These were the models that my analysis based on.
+These were the models that my analysis was based on.
 
 
 ### Data collection
@@ -32,25 +32,25 @@ These were the models that my analysis based on.
 Then I used the `ReviewDownloader.py` script to download all the reviews. The process involved the following steps:
 
 1. The product names and links are stored in a dictionary.
-2. The program leaps through the dictionary, and downloads review pages (via **request** package).
-3. html files are processed as xml structures (via **lxlm** package)
+2. The program leaps through the dictionary, and downloads review pages (via the **request** package).
+3. html files are processed as xml structures (via the **lxlm** package)
 4. Fields are extracted with a series of xpath expressions.
 5. I was interested in the following fields of the reviews: date, rating, title, text.
-6. These fields had to be cleaned to prepare to analysis: date -> ISO 8601 format (**datetime** package), special UTF8 characters were removed from the text of the review
-7. cleaned values were saved in a .csv file
-6. The downloading process itself was really long (over hundred thousand reviwes on ten thousand pages), I had to make sure, once the program stops because of whatever reason, it can continue data collection upon restart. When a program starts, checks the number of lines of the saved cvs (**commands** package), that can be translated to the progression.
+6. These fields had to be cleaned to prepare for analysis: date -> ISO 8601 format (**datetime** package), special UTF8 characters were removed from the text of the review.
+7. Cleaned values were saved in a .csv file.
+6. The downloading process itself was really long (over hundred thousand reviwes on ten thousand pages), I had to make sure that if the program stops for whatever reason, it can continue data collection upon restart. When the program starts, it checks the number of lines of the saved cvs file (**commands** package), so it can calculate the last page it read and continue from there.
 
 ### Analysis - getting started
 
 The csv files are read by the `csv_process.py` script. Though the text of the reviews are also available to analyse, at this point I am only focusing on the date of the reviews and the pure ratings. <br />
 
-The script reads all the saved csv file then takes the date (as datetime object) and the rating value (as float) and builds a pandas dataframe object. Then the dataframes of each model is stored in a dictionary as a value. <br />
+The script reads all saved csv files then takes the date (as datetime object) and the rating value (as float) and builds a pandas dataframe object. Then the dataframe of each model is stored in a dictionary as a value. <br />
 
-The workflow of the subsequent scripts rely on the usage of a suitable IDE like [spyder](https://code.google.com/p/spyderlib/), as I the analyses are using the variables created by this script.
+The workflow of the subsequent scripts rely on the usage of a suitable IDE like [spyder](https://code.google.com/p/spyderlib/).
 
 ### Analysis - First steps
 
-At first I wanted to create a table to summarize the number of reviews and ratings of different e-book reader:
+At first, I wanted to create a table to summarize the number of reviews and ratings of different e-book readers:
 ```Python
 print "| Model  | Number of Ratings | Average ratings | First Rating |"
 print "|-------:|:-----------------:|:---------------:|:-------------|"
@@ -79,7 +79,7 @@ for i in range(len(kindles)):
 
 ### Time dependent analysis of the reviews
 
-In this chapter I was looking at how the ratings of different kindle models changed over time. I could look at the number of reviews and the average rating the reader got on a scale of 1 to 5. Initially I was thinking there might be a decrease in the ratings over time, as the announcements of newer models, with more features makes the old ones less satisfactory, but at the same time I was also expecting a large decrease of the number of reviews when a model becomes out of date.
+In this chapter I was looking at how the ratings of different kindle models changed over time. I could look at the number of reviews and the average rating the reader got on a scale of 1 to 5. Initially, I was thinking there might be a decrease in the ratings over time, as the announcements of newer models with more features makes the old ones less satisfactory, but at the same time I was also expecting a large decrease in the number of reviews when a model becomes out of date.
 
 Steps:
 
@@ -95,13 +95,13 @@ Steps:
 
 #### Discussion:
 
-There are many interesting features on the graph:
-* In general, ratings just slightly decrease over time, except the Kindle Touch model, where since the announce of the Paperwhite models, the average ratings have decreased dramotically. I think the buyers could possibly made a wrong choice and accidentally purchased the thouch instead of the paperwhite. (there are not too many reviews, 4-20 a month)
-* The lack of the general decrease can be explained by the fact that one user, who bought an obsolote model, probably do not have access to newer ones to compare.
-* An other interesting feature we can be seen in many models: after announcing a new product, during the first few months the ratings are slightly increasing. I think the reason of this behavior is the nature of the population who buys freshly announced products: they probaby are highly motivated by the novelty or by the massive advertisments. These people might have extraordinarily high expectations leading to the lower ratings. Latter the reviews belong to customers who just want to buy an e-book reader, and they just satisfied as it is.
-* An interesting piece of the kindle family is the DX model. It has never been as popular as other members, but because of its unique large display, DX equally satisfies customers over the 4 and a half years since its announcement.
-* Interestingly the most frequently rated e-reader is the third generation Kindle announced in 2010. Since then, however the extra features built in the newer models, readers have got less reviews. (Though, since 2011 multiple models have been competing with each other) This trend might indicates the peak of the e-book reader market if we assume that the number of reviews are proportional to the number of sold items.
-* Though the distribution of the ratings are quite even (except months when the number of reviews were really low, so the error is high) we can see a really striking outlier on the second generation kindle, at 5th month.
+There are several interesting features of the graph:
+* In general, ratings just slightly decrease over time, except the Kindle Touch model, where since the announcement of the Paperwhite models, the average ratings have decreased dramotically. The buyers could have made the wrong choice and accidentally purchased the thouch instead of the paperwhite (there are not too many reviews, 4-20 a month).
+* The lack of the general decrease can be explained by the fact that the user who bought an obsolote model, probably does not have access to newer ones to compare.
+* Another interesting feature that can be seen with many models: after announcing a new product, during the first few months the ratings are slightly increasing. I think the reason of this behavior is the nature of the population who buys freshly announced products: they probaby are highly motivated by the novelty or by the massive advertisments. These people might have extraordinarily high expectations leading to the lower ratings. Later the reviews belong to customers who just want to buy an e-book reader, and they are just satisfied as it is.
+* An interesting piece of the kindle family is the DX model. It has never been as popular as other members, but because of its unique large display, DX equally satisfies customers over the 4.5 years since its announcement.
+* The most frequently rated e-reader is the third generation Kindle announced in 2010. Since then, despite the extra features built in the newer models, readers have got fewer reviews (although since 2011 multiple models have been competing with each other).
+* Though the variability in the average ratings for the same device is small (except months when the number of reviews were really low, so the error is high) we can see a striking outlier on the second generation kindle, at the 5th month (denoted by a red circle).
 
 ```Python
 resampled_df["Kindle_2"][3:7]
@@ -116,7 +116,7 @@ Out[396]:
 | 2009-08-31 | 3.991653 | 599   | 1.488506 | 0.060819 |
 | 2009-09-30 | 4.479936 | 623   | 1.010793 | 0.040497 |
 
-As the number of the reviews are really high, this deviation is quite surprising. We might can think there was a bad batch of readers and all the buyers were immediately complainig (This suggested by the extraordinary high review number as well).If we compare the histogram of this period with the histogram of the total rating of Kindle 2 we can see how the weakest rating is highly populated.
+As the number of the reviews are really high, this deviation is quite surprising. We might think there was a bad batch of readers and all the buyers were immediately complaining. If we compare the histogram of this period with the histogram of the total rating of Kindle 2 we can see how the weakest rating is highly populated.
 ```Python
 f.subplots_adjust(hspace=0)
 setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
@@ -137,14 +137,14 @@ ax[1].legend(loc='upper center')
 ```
 ![Distribution of ratings of Kindle 2 at different times](http://kepfeltoltes.hu/140525/Kindle2_raings_www.kepfeltoltes.hu_.png)
 
-To find out more about this outlier, I will later analyse the text of the reviews of this period, as I could not find any news in the archives of the mayor newsportals.
+To find out more about this outlier, I will later analyse the text of the reviews of this period, as I could not find any news in the archives of major newsportals.
 
 #### Combining reviews over time
 
-As I have mentioned earlier, the number of reviews suggest that the e-book readers are no longer as interesting. To test this I have combined all the number of reviews of all models to see if that was indeed the case.
-
-Though I have to optimize the plotting script (stackedplot class compatibility with other plot methods is quite poor...) The overall shope shuggest that the number of reviews over time probably reached its peak and ....
+Based on the clearly identifiable peaks after Christmas we can assume that the number of reviews are proportional to the number of sold items. If this is the case, by combining the number of reviews from all models, we can get an overview of the dynamics of the e-book reader market.
 
 ![Cumulative reviews](http://kepfeltoltes.hu/140525/cumul_rev_www.kepfeltoltes.hu_.png)
+
+According to the stacked plot, since the introduction of Kindle readers in 2008, there was a great increase in the demand peaking around 2011 and 2012, but to maintain the interest a constant development is required like touch screen and backlight.
 
 # To be continued...
