@@ -2,20 +2,21 @@
 """
 This script was written to download reviews of a set of items from Amazon.com
 
-Process: 
+Process:
     1) The product names and links are stored in a dictionary
     2) The program leaps through the dictionary, and downloads review pages
     3) html files are processed as xml structures
-    4) Fields are extracted with xpath expression    
+    4) Fields are extracted with xpath expression
     5) Saved variables: date, rating, title, text in a csv file
     6) The program keeps track the downloading progression
-        So after a restart, the program can continue the data collection 
+        So after a restart, the program can continue the data collection
         from where it stopped
-    
+
 version: 1.5 Last modified: 2014.05.12
 
 @author: Daniel Suveges
 """
+
 from lxml import html   # html files are processed as xml
 import requests         # manages remote file access
 import datetime         # to format data
@@ -23,45 +24,45 @@ import commands         # to keep track where the downlad stops last time
 
 # This function extract the rating number from the given field
 def clearRatings(ratingList):
-    
-    clearedrating = []    
+
+    clearedrating = []
     for rating in ratingList:
         clearedrating.append(rating[0:3])
 
-    return(clearedrating)
+    return clearedrating
 
-# non-ASCII UTF-8 characters could easily cause problems, we have to remove them    
+# non-ASCII UTF-8 characters could easily cause problems, we have to remove them
 def formatRevText(revlists):
     formatedRevtext = []
-    
+
     for revtext in revlists:
         revtext = removeNonAscii(revtext)
         formatedRevtext.append(revtext.text)
 
-    return(formatedRevtext)    
-    
+    return formatedRevtext
+
 # the format of the date in the reviews is not nice. Format it!
-    # January 15, 2012 -> 2012-01-15
+# January 15, 2012 -> 2012-01-15
 def clearDate(revDate):
     clearedDate = []
-    
+
     for date in revDate:
         clearedDate.append(datetime.datetime.strptime(date, "%B %d, %Y").strftime("%Y-%m-%d"))
-                
-    return(clearedDate)
-    
+
+    return clearedDate
+
 # non-ASCII UTF-8 characters could easily cause problems, we have to remove them
 def clearText(texts):
     clearedText = []
-    
+
     for text in texts:
         text = removeNonAscii(text)
-        clearedText.append(text.replace(",","" ))
-        
-    return(clearedText)
+        clearedText.append(text.replace(",", ""))
+
+    return clearedText
 
 # As each entry in the output file equals to one review,
-# And there are 10 reviews on one page, based on the length of the 
+# And there are 10 reviews on one page, based on the length of the
 # output file, we can get the page, where the data collection ended
 def PageToDownLoad(product):
     GetLengthCommand = "wc -l " + product + "_review.csv"
@@ -78,12 +79,12 @@ def PageToDownLoad(product):
 
 # non-ASCII UTF-8 characters could easily cause problems, we have to remove them
 def removeNonAscii(s): 
-    return "".join(i for i in s if ord(i)<128)
+    return "".join(i for i in s if ord(i) < 128)
 
 # organizing downloaded values into a printable lines of csv file.
 def writeTable(date, rating, title, text):
     tableRows = []
-    
+
     # The length should be 10, but somehow some values sometimes are missing...
     # We need to check if all the values are there, and write only those, that are there...
     for i in range(10):
@@ -91,73 +92,73 @@ def writeTable(date, rating, title, text):
             date[i]
         except:
             date.append("NA")
-            print("Date was missing!")
+            print "Date was missing!"
         try:
             rating[i]
         except:
             rating.append("NA")
-            print("Date was missing!")
+            print "Date was missing!"
         try:
             title[i]
         except:
             title.append("NA")
-            print("Date was missing!")
+            print "Date was missing!"
         try:
             text[i]
         except:
             text.append("NA")
-            print("Date was missing!")
-            
+            print "Date was missing!"
+
         tableRows.append(date[i]+","+rating[i]+","+title[i]+","+text[i]+"\n")
-    
-    return(tableRows)
+
+    return tableRows
 
 # A function to get the number of reviewpages
 def LastPage(link):
 
-    tree      = DownloadPage((link+str(1)))
-    LastPage  = tree.xpath('//div[@class="CMpaginate"]/span/a/text()')
-    return (LastPage[1])
+    tree = DownloadPage((link+str(1)))
+    LastPage = tree.xpath('//div[@class="CMpaginate"]/span/a/text()')
+    return LastPage[1]
 
-# Downloads webpage and generates a xml tree from it 
+# Downloads webpage and generates a xml tree from it
 def DownloadPage(link):
-    
-    page           = requests.get(link)
-    brFreePage     = page.text.replace("<br />", "") # all <br /> tags have to be removed!!     
-    tree           = html.fromstring(brFreePage)
-    return(tree)
+
+    page = requests.get(link)
+    brFreePage = page.text.replace("<br />", "") # all <br /> tags have to be removed!!     
+    tree = html.fromstring(brFreePage)
+    return tree
 
 # Core process does most of the stuff
 def Core(product, link):
-    
-    lastpage   = LastPage(link)          # The last page of reviews
-    startpage  = PageToDownLoad(product) # Where to start downloading.
+
+    lastpage = LastPage(link)          # The last page of reviews
+    startpage = PageToDownLoad(product) # Where to start downloading.
 
     reviewfile = open(product + "_review.csv", "a+") # The output csv file for storing the data
 
     # main loop
     for pageNo in range(int(startpage), int(lastpage)):
-        
-        # Status update:        
-        print("We are on page {0} (out of {2}) of the reviews of {1}".format(str(pageNo), product, lastpage))        
+
+        # Status update:    
+        print "We are on page {0} (out of {2}) of the reviews of {1}".format(str(pageNo), product, lastpage)   
         
         # Downloading review page:        
-        tree  = DownloadPage(link+str(pageNo))
+        tree = DownloadPage(link+str(pageNo))
         
         # Step 3 -> Extracting information from the html file:
-        rating  = tree.xpath('//span[@style="margin-right:5px;"]/span/span/text()')
-        date    = tree.xpath('//span[@style="vertical-align:middle;"]/nobr/text()')
-        title   = tree.xpath('//span[@style="vertical-align:middle;"]/b/text()')
+        rating = tree.xpath('//span[@style="margin-right:5px;"]/span/span/text()')
+        date = tree.xpath('//span[@style="vertical-align:middle;"]/nobr/text()')
+        title = tree.xpath('//span[@style="vertical-align:middle;"]/b/text()')
         revtext = tree.xpath('//div[@class="reviewText"]/text()')
         
         # Step 4 -> Cleaning downloaded data
         cleanRating = clearRatings(rating)
-        cleanDate   = clearDate(date)
-        cleanTitle  = clearText(title)
-        cleanText   = clearText(revtext)
+        cleanDate = clearDate(date)
+        cleanTitle = clearText(title)
+        cleanText = clearText(revtext)
         
         # Step 5. saving parsed data:
-        table       = writeTable(cleanDate, cleanRating, cleanTitle, cleanText)
+        table = writeTable(cleanDate, cleanRating, cleanTitle, cleanText)
         reviewfile.writelines(table)
                 
     reviewfile.close()
