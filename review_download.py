@@ -97,17 +97,17 @@ def writeTable(date, rating, title, text):
             rating[i]
         except:
             rating.append("NA")
-            print "Date was missing!"
+            print "Rating was missing!"
         try:
             title[i]
         except:
             title.append("NA")
-            print "Date was missing!"
+            print "Title was missing!"
         try:
             text[i]
         except:
             text.append("NA")
-            print "Date was missing!"
+            print "Text was missing!"
 
         tableRows.append(date[i]+","+rating[i]+","+title[i]+","+text[i]+"\n")
 
