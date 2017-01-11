@@ -118,6 +118,7 @@ def LastPage(link):
 
     tree = DownloadPage((link+str(1)))
     LastPage = tree.xpath('//div[@class="CMpaginate"]/span/a/text()')
+    print LastPage
     return LastPage[1]
 
 # Downloads webpage and generates a xml tree from it
@@ -130,6 +131,7 @@ def DownloadPage(link):
 
 # Core process does most of the stuff
 def Core(product, link):
+    print "[Info] We are processing %s" % product
 
     lastpage = LastPage(link)          # The last page of reviews
     startpage = PageToDownLoad(product) # Where to start downloading.
@@ -186,14 +188,25 @@ kindles =   {
     # Kindle touch 2011
     "Kindle_touch" : "http://www.amazon.com/Kingle-Touch-e-Reader-Touchscreen-Touch-Screen-Wi-Fi/product-reviews/B005890FN0/ref=sr_1_1_cm_cr_acr_txt?",
 
-    # Kindle paperwhite first genertation: 2012
+    # Kindle Paperwhite, 6" High Resolution  45,694 reviews
     "Kindle_paperwhite_2": "http://www.amazon.com/Kindle-Paperwhite-Ereader/product-reviews/B00AWVXK5O/ref=sr_1_1_cm_cr_acr_txt?pageNumber=",
 
-    # Kindle paperwhite second generation: 2013
-    "Kindle_paperwhite": "http://www.amazon.com/Kindle-Paperwhite-3G/product-reviews/B007OZNUCE/ref=pr_all_summary_cm_cr_acr_txt?pageNumber="
+    # Kindle Paperwhite 3G, 6" 22,153 reviews
+    "Kindle_paperwhite": "http://www.amazon.com/Kindle-Paperwhite-3G/product-reviews/B007OZNUCE/ref=pr_all_summary_cm_cr_acr_txt?pageNumber=",
 
+    # Kindle glare free 2016 3,604 reviews
+    "Kindle_noglare" : "https://www.amazon.com/All-New-Kindle-ereader-Glare-Free-Touchscreen/product-reviews/B00ZV9PXP2/ref=cm_cr_arp_d_paging_btm_2?ie=UTF8&reviewerType=all_reviews&showViewpoints=0&sortBy=recent&pageNumber=",
+
+    # Kindle Paperwhite high-res 2015 35,264 reviews
+    "Kindle_paperwhite_hires" : "https://www.amazon.com/All-New-Kindle-ereader-Glare-Free-Touchscreen/dp/B00ZV9PXP2/ref=sr_tr_sr_1?ie=UTF8&qid=1484086464&sr=8-1&keywords=kindle&th=1#customerReviews",
+
+    # Kindle voyage 2014 : 11,467 reviews
+    "Kindle_voyage" : "https://www.amazon.com/Amazon-Kindle-Voyage-6-Inch-4GB-eReader/product-reviews/B00IOY8XWQ/ref=cm_cr_dp_qt_see_all_top?ie=UTF8&reviewerType=avp_only_reviews&showViewpoints=1&sortBy=helpful",
+
+    # Kindle Oasis  2016 : 2,571 reviews
+    "Kindle_oasis" : "https://www.amazon.com/Amazon-Kindle-Oasis-eReader-with-Leather-Charging-Cover/dp/B00REQKWGA/ref=sr_tr_sr_4?ie=UTF8&qid=1484086464&sr=8-4&keywords=kindle#customerReviews"
 }
 
 # Looping through the dictionary and download the reviews of all Kindles
-for kindle in kindles.keys():
-    Core(kindle,kindles[kindle])    
+for kindle, URL in kindles.iteritems():
+    Core(kindle, URL)    
