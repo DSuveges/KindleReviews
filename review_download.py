@@ -12,59 +12,58 @@ Process:
         So after a restart, the program can continue the data collection
         from where it stopped
 
-version: 1.5 Last modified: 2014.05.12
+version: 2.0 Last modified: 2017.01.14
+
+Update:
+    1) New Kindle version were added.
+    2) xml parsing was adjusted to the new xml structure.
+    3) Fake user agent is sent with the request to fool amazon.
+    4) A more sophisticated error handling during page download.
+    5) More efficient way to strucure and save data.
 
 @author: Daniel Suveges
 """
-
+#from lxml import xml    # xml parsing methods.
 from lxml import html   # html files are processed as xml
 import requests         # manages remote file access
 import datetime         # to format data
-import commands         # to keep track where the downlad stops last time
+import commands         # to keep track where the downlad stops last 
+import sys
 
-# This function extract the rating number from the given field
-def clearRatings(ratingList):
 
-    clearedrating = []
-    for rating in ratingList:
-        clearedrating.append(rating[0:3])
+def DownloadPage(link):
+    '''
+    This function download one page of reviews at a time. 
+    It also emulates a regular user agent as amazon does not allows parsing
+    '''
+    headers = {'User-Agent': ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)'
+                              'AppleWebKit/537.36 (KHTML, like Gecko)'
+                              'Chrome/39.0.2171.95 Safari/537.36')}
+    page = requests.get(link, headers=headers)
+    brFreePage = page.text.replace("<br />", "") # all <br /> tags have to be removed!!     
+    tree = html.fromstring(brFreePage)
+    return tree
 
-    return clearedrating
+def LastPage(link):
+    '''
+    A function to get the last page of reviews. 
+    '''
+    tree = DownloadPage((link+str(1)))
+    LastPage = tree.xpath('//li[@class="page-button"]//text()')
+    
+    # If there is no returned data, we wait and repeat:
+    while len(LastPage) < 1:
+        time.sleep(0.5)
+        tree = DownloadPage((link+str(1)))
+        LastPage = tree.xpath('//li[@class="page-button"]//text()')        
+    
+    return LastPage[-1].replace(",", "")
 
-# non-ASCII UTF-8 characters could easily cause problems, we have to remove them
-def formatRevText(revlists):
-    formatedRevtext = []
-
-    for revtext in revlists:
-        revtext = removeNonAscii(revtext)
-        formatedRevtext.append(revtext.text)
-
-    return formatedRevtext
-
-# the format of the date in the reviews is not nice. Format it!
-# January 15, 2012 -> 2012-01-15
-def clearDate(revDate):
-    clearedDate = []
-
-    for date in revDate:
-        clearedDate.append(datetime.datetime.strptime(date, "%B %d, %Y").strftime("%Y-%m-%d"))
-
-    return clearedDate
-
-# non-ASCII UTF-8 characters could easily cause problems, we have to remove them
-def clearText(texts):
-    clearedText = []
-
-    for text in texts:
-        text = removeNonAscii(text)
-        clearedText.append(text.replace(",", ""))
-
-    return clearedText
-
-# As each entry in the output file equals to one review,
-# And there are 10 reviews on one page, based on the length of the
-# output file, we can get the page, where the data collection ended
 def PageToDownLoad(product):
+    '''
+    Based on the progression of previous runs, this function
+    can decide which page should we continue downloading the reviews.
+    '''
     GetLengthCommand = "wc -l " + product + "_review.csv"
     wcAnswer = commands.getoutput(GetLengthCommand)
     wcAnswer = wcAnswer.lstrip()
@@ -77,57 +76,60 @@ def PageToDownLoad(product):
     except:
         return 1
 
-# non-ASCII UTF-8 characters could easily cause problems, we have to remove them
+
+'''
+There are small functions to clear all returned fields.
+'''
+def clearRatings(ratingList):
+    if len(ratingList) == 0:
+        print "[Warning] Rating is missing!"
+        return "NA"
+    else:
+        return ratingList[0][0:3]
+
+def cleanAuthors(authors):
+    if len(authors) == 0:
+        return "NA"
+    else:
+        return removeNonAscii(authors[0])
+
+def clearDate(revDate):
+    '''
+    The format of the date in the reviews is not nice. Format it!
+    Expected format: 'on December 4, 2013'
+    January 15, 2012 -> 2012-01-15
+    '''
+    if len(revDate) == 0:
+        print "[Warning] Review date is missing!"
+        return "NA"
+    else:
+        return datetime.datetime.strptime(revDate[0], "on %B %d, %Y").strftime("%Y-%m-%d")
+
+def clearText(texts):
+    if len(texts) == 0:
+        print "[Warning] rating is missing!"
+        return "NA"
+    else:
+        text = removeNonAscii(texts[0])
+        return text.replace(",", "")
+
+'''
+Helpper functions for the above routines:
+'''
 def removeNonAscii(s): 
+    '''
+    Non-ASCII UTF-8 characters could easily cause problems, we have to remove them...
+    (Although it should not be a problem...)
+    '''
     return "".join(i for i in s if ord(i) < 128)
 
-# organizing downloaded values into a printable lines of csv file.
-def writeTable(date, rating, title, text):
-    tableRows = []
+def formatRevText(revlists):
+    if len(revlists) == 0:
+        print "[Warning] Review text is missing!"
+        return "NA"
+    else:
+        return removeNonAscii(revlists[0])
 
-    # The length should be 10, but somehow some values sometimes are missing...
-    # We need to check if all the values are there, and write only those, that are there...
-    for i in range(10):
-        try:
-            date[i]
-        except:
-            date.append("NA")
-            print "Date was missing!"
-        try:
-            rating[i]
-        except:
-            rating.append("NA")
-            print "Rating was missing!"
-        try:
-            title[i]
-        except:
-            title.append("NA")
-            print "Title was missing!"
-        try:
-            text[i]
-        except:
-            text.append("NA")
-            print "Text was missing!"
-
-        tableRows.append(date[i]+","+rating[i]+","+title[i]+","+text[i]+"\n")
-
-    return tableRows
-
-# A function to get the number of reviewpages
-def LastPage(link):
-
-    tree = DownloadPage((link+str(1)))
-    LastPage = tree.xpath('//div[@class="CMpaginate"]/span/a/text()')
-    print LastPage
-    return LastPage[1]
-
-# Downloads webpage and generates a xml tree from it
-def DownloadPage(link):
-
-    page = requests.get(link)
-    brFreePage = page.text.replace("<br />", "") # all <br /> tags have to be removed!!     
-    tree = html.fromstring(brFreePage)
-    return tree
 
 # Core process does most of the stuff
 def Core(product, link):
@@ -142,27 +144,56 @@ def Core(product, link):
     for pageNo in range(int(startpage), int(lastpage)):
 
         # Status update:    
-        print "We are on page {0} (out of {2}) of the reviews of {1}".format(str(pageNo), product, lastpage)   
-        
+        sys.stdout.write("\rWe are on page {0} (out of {2}) of the reviews of {1}\r".format(str(pageNo), product, lastpage))
+        sys.stdout.flush()
+
         # Downloading review page:        
         tree = DownloadPage(link+str(pageNo))
-        
+
         # Step 3 -> Extracting information from the html file:
-        rating = tree.xpath('//span[@style="margin-right:5px;"]/span/span/text()')
-        date = tree.xpath('//span[@style="vertical-align:middle;"]/nobr/text()')
-        title = tree.xpath('//span[@style="vertical-align:middle;"]/b/text()')
-        revtext = tree.xpath('//div[@class="reviewText"]/text()')
+        authors = tree.xpath('//a[@data-hook="review-author"]//text()')
         
-        # Step 4 -> Cleaning downloaded data
-        cleanRating = clearRatings(rating)
-        cleanDate = clearDate(date)
-        cleanTitle = clearText(title)
-        cleanText = clearText(revtext)
+        # If authors could not be extracted we can assume somethig has gone wrong. we wait and repeat 
+        tryCnt = 0
+        while len(authors) < 1:
+            time.sleep(0.5)
+            tree = DownloadPage(link+str(pageNo))
+            authors = tree.xpath('//a[@data-hook="review-author"]//text()')
+            tryCnt += 1 
+            
+            if tryCnt == 10:
+                print "[Warning] 10 attempts to download reviews for %s has been failed for page %s."
+                print "[Warning] Going to next page."
+                continue
         
-        # Step 5. saving parsed data:
-        table = writeTable(cleanDate, cleanRating, cleanTitle, cleanText)
-        reviewfile.writelines(table)
-                
+        # Parsing xml file:
+        for node in tree.xpath('//div[@data-hook="review"]'):
+            
+            # Initializing variables:
+            authors, ratings, dates, titles, revtexts = ([] for i in range(5))
+            
+            # Extracting data:
+            authors = node.xpath('.//a[@data-hook="review-author"]//text()')
+            ratings = node.xpath('.//i[@data-hook="review-star-rating"]//text()')
+            dates = node.xpath('.//span[@data-hook="review-date"]//text()')
+            titles = node.xpath('.//a[@data-hook="review-title"]//text()')
+            revtexts = node.xpath('.//span[@class="a-size-base review-text"]//text()')
+            
+            # Step 4 -> Cleaning downloaded data
+            cleanAuthor = cleanAuthors(authors)
+            cleanRating = clearRatings(ratings)
+            cleanDate = clearDate(dates)
+            cleanTitle = clearText(titles)
+            cleanText = clearText(revtexts)
+
+            # Step 5. saving parsed data:
+            try:
+                reviewfile.writelines(",".join([cleanDate, cleanAuthor, cleanRating, cleanTitle, cleanText])+"\n")
+                #print ",".join([cleanDate, cleanAuthor, cleanRating, cleanTitle, cleanText])
+            except:
+                print "[Warnings] There were problem with saving data."
+
+    # Once all pages have downloaded the file handle is closed.
     reviewfile.close()
 
 # Might not all the generations are listed here, but definately most of them.... 
