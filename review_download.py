@@ -29,19 +29,28 @@ import requests         # manages remote file access
 import datetime         # to format data
 import commands         # to keep track where the downlad stops last 
 import sys
-
+import time
 
 def DownloadPage(link):
     '''
     This function download one page of reviews at a time. 
     It also emulates a regular user agent as amazon does not allows parsing
     '''
-    headers = {'User-Agent': ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)'
-                              'AppleWebKit/537.36 (KHTML, like Gecko)'
-                              'Chrome/39.0.2171.95 Safari/537.36')}
-    page = requests.get(link, headers=headers)
+    headers = {'User-Agent': ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36')}
+    proxies = {'http' : 'http://10.10.1.10:3128'}
+    page = requests.get(link, 
+        headers=headers, 
+        proxies=proxies)
     brFreePage = page.text.replace("<br />", "") # all <br /> tags have to be removed!!     
     tree = html.fromstring(brFreePage)
+
+    while "you're not a robot" in "".join(tree.xpath('//text()')):
+        time.sleep(1)
+        page = requests.get(link, headers=headers, proxies=proxies)
+        brFreePage = page.text.replace("<br />", "") # all <br /> tags have to be removed!!     
+        tree = html.fromstring(brFreePage)
+        print "[Warning] Robot check has failed! Page reloaded."
+
     return tree
 
 def LastPage(link):
@@ -55,8 +64,8 @@ def LastPage(link):
     while len(LastPage) < 1:
         time.sleep(0.5)
         tree = DownloadPage((link+str(1)))
-        LastPage = tree.xpath('//li[@class="page-button"]//text()')        
-    
+        LastPage = tree.xpath('//li[@class="page-button"]//text()')
+
     return LastPage[-1].replace(",", "")
 
 def PageToDownLoad(product):
@@ -71,7 +80,7 @@ def PageToDownLoad(product):
     # Test if the file existed or not:
     firstWord = wcAnswer.split(" ")[0]
     try:
-        return (int(firstWord)/10)
+        return (int(float(firstWord)/10+0.5))
 
     except:
         return 1
@@ -133,7 +142,7 @@ def formatRevText(revlists):
 
 # Core process does most of the stuff
 def Core(product, link):
-    print "[Info] We are processing %s" % product
+    print "\n[Info] We are processing %s" % product
 
     lastpage = LastPage(link)          # The last page of reviews
     startpage = PageToDownLoad(product) # Where to start downloading.
@@ -141,7 +150,7 @@ def Core(product, link):
     reviewfile = open(product + "_review.csv", "a+") # The output csv file for storing the data
 
     # main loop
-    for pageNo in range(int(startpage), int(lastpage)):
+    for pageNo in range(int(startpage), int(lastpage)+1):
 
         # Status update:    
         sys.stdout.write("\rWe are on page {0} (out of {2}) of the reviews of {1}\r".format(str(pageNo), product, lastpage))
@@ -156,14 +165,15 @@ def Core(product, link):
         # If authors could not be extracted we can assume somethig has gone wrong. we wait and repeat 
         tryCnt = 0
         while len(authors) < 1:
-            time.sleep(0.5)
+            time.sleep(1)
             tree = DownloadPage(link+str(pageNo))
             authors = tree.xpath('//a[@data-hook="review-author"]//text()')
             tryCnt += 1 
-            
+            print "\n".join(tree.xpath('//text()')) # Downloads usually fail because robot check... I don't know how to overcome it.
+ 
             if tryCnt == 10:
-                print "[Warning] 10 attempts to download reviews for %s has been failed for page %s."
-                print "[Warning] Going to next page."
+                print "[Warning] 10 attempts to download reviews for %s has been failed for page %s." %(product, pageNo)
+                print "[Warning] Adding blank lines then going to next page."
                 continue
         
         # Parsing xml file:
@@ -205,37 +215,37 @@ kindles =   {
     "Kindle_2": "http://www.amazon.com/Kindle-Wireless-Reading-Device-Display/product-reviews/B0015T963C/ref=sr_1_1_cm_cr_acr_txt?pageNumber=",
 
     # Kindle DX: 2009
-    "Kindle_DX": "http://www.amazon.com/Kindle-DX-Wireless-Reader-3G-Global/product-reviews/B002GYWHSQ/ref=dp_top_cm_cr_acr_txt?ie=UTF8&showViewpoints=1",
+    #"Kindle_DX": "http://www.amazon.com/Kindle-DX-Wireless-Reader-3G-Global/product-reviews/B002GYWHSQ/ref=dp_top_cm_cr_acr_txt?ie=UTF8&showViewpoints=1",
 
     # 3rd generation (Kindle keyboard): 2010
-    "Kindle_keyboard": "http://www.amazon.com/Kindle-Wireless-Reader-Wifi-Graphite/product-reviews/B002Y27P3M/ref=sr_1_2_cm_cr_acr_txt?pageNumber=",
+    #"Kindle_keyboard": "http://www.amazon.com/Kindle-Wireless-Reader-Wifi-Graphite/product-reviews/B002Y27P3M/ref=sr_1_2_cm_cr_acr_txt?pageNumber=",
 
     # 4th generation - Kindle 2011
-    "Kindle_basic": "http://www.amazon.com/Kindle-eReader-eBook-Reader-e-Reader/product-reviews/B00492CIC8/ref=cm_cr_pr_btm_link_2?pageNumber=",
+    #"Kindle_basic": "http://www.amazon.com/Kindle-eReader-eBook-Reader-e-Reader/product-reviews/B00492CIC8/ref=cm_cr_pr_btm_link_2?pageNumber=",
 
     # 5th generation - Kindle 2012
-    "Kindle": "http://www.amazon.com/Kindle-Ereader-ebook-reader/product-reviews/B007HCCNJU/ref=cm_cr_dp_see_all_btm?pageNumber=",
+    #"Kindle": "http://www.amazon.com/Kindle-Ereader-ebook-reader/product-reviews/B007HCCNJU/ref=cm_cr_dp_see_all_btm?pageNumber=",
 
     # Kindle touch 2011
-    "Kindle_touch" : "http://www.amazon.com/Kingle-Touch-e-Reader-Touchscreen-Touch-Screen-Wi-Fi/product-reviews/B005890FN0/ref=sr_1_1_cm_cr_acr_txt?",
+    #"Kindle_touch" : "http://www.amazon.com/Kingle-Touch-e-Reader-Touchscreen-Touch-Screen-Wi-Fi/product-reviews/B005890FN0/ref=sr_1_1_cm_cr_acr_txt?",
 
     # Kindle Paperwhite, 6" High Resolution  45,694 reviews
     "Kindle_paperwhite_2": "http://www.amazon.com/Kindle-Paperwhite-Ereader/product-reviews/B00AWVXK5O/ref=sr_1_1_cm_cr_acr_txt?pageNumber=",
 
     # Kindle Paperwhite 3G, 6" 22,153 reviews
-    "Kindle_paperwhite": "http://www.amazon.com/Kindle-Paperwhite-3G/product-reviews/B007OZNUCE/ref=pr_all_summary_cm_cr_acr_txt?pageNumber=",
+    #"Kindle_paperwhite": "http://www.amazon.com/Kindle-Paperwhite-3G/product-reviews/B007OZNUCE/ref=pr_all_summary_cm_cr_acr_txt?pageNumber=",
 
     # Kindle glare free 2016 3,604 reviews
-    "Kindle_noglare" : "https://www.amazon.com/All-New-Kindle-ereader-Glare-Free-Touchscreen/product-reviews/B00ZV9PXP2/ref=cm_cr_arp_d_paging_btm_2?ie=UTF8&reviewerType=all_reviews&showViewpoints=0&sortBy=recent&pageNumber=",
+    #"Kindle_noglare" : "https://www.amazon.com/All-New-Kindle-ereader-Glare-Free-Touchscreen/product-reviews/B00ZV9PXP2/ref=cm_cr_arp_d_paging_btm_2?ie=UTF8&reviewerType=all_reviews&showViewpoints=0&sortBy=recent&pageNumber=",
 
     # Kindle Paperwhite high-res 2015 35,264 reviews
     "Kindle_paperwhite_hires" : "https://www.amazon.com/All-New-Kindle-ereader-Glare-Free-Touchscreen/dp/B00ZV9PXP2/ref=sr_tr_sr_1?ie=UTF8&qid=1484086464&sr=8-1&keywords=kindle&th=1#customerReviews",
 
     # Kindle voyage 2014 : 11,467 reviews
-    "Kindle_voyage" : "https://www.amazon.com/Amazon-Kindle-Voyage-6-Inch-4GB-eReader/product-reviews/B00IOY8XWQ/ref=cm_cr_dp_qt_see_all_top?ie=UTF8&reviewerType=avp_only_reviews&showViewpoints=1&sortBy=helpful",
+    #"Kindle_voyage" : "https://www.amazon.com/Amazon-Kindle-Voyage-6-Inch-4GB-eReader/product-reviews/B00IOY8XWQ/ref=cm_cr_dp_qt_see_all_top?ie=UTF8&reviewerType=avp_only_reviews&showViewpoints=1&sortBy=helpful",
 
     # Kindle Oasis  2016 : 2,571 reviews
-    "Kindle_oasis" : "https://www.amazon.com/Amazon-Kindle-Oasis-eReader-with-Leather-Charging-Cover/dp/B00REQKWGA/ref=sr_tr_sr_4?ie=UTF8&qid=1484086464&sr=8-4&keywords=kindle#customerReviews"
+    #"Kindle_oasis" : "https://www.amazon.com/Amazon-Kindle-Oasis-eReader-with-Leather-Charging-Cover/dp/B00REQKWGA/ref=sr_tr_sr_4?ie=UTF8&qid=1484086464&sr=8-4&keywords=kindle#customerReviews"
 }
 
 # Looping through the dictionary and download the reviews of all Kindles
